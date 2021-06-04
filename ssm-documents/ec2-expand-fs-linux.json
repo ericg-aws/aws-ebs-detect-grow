@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "2.2",
+  "description": "Adjusts file system after EBS resizing",
+  "parameters": {
+    "mountpoint": {
+      "type": "String",
+      "description": "Mount point for file system",
+      "default": "/none"
+    },
+    "fstype": {
+      "type": "String",
+      "description": "File system type, e.g. xfs, ext4",
+      "default": "none"
+    }
+  },
+  "mainSteps": [
+      {
+      "action": "aws:runShellScript",
+      "name": "fsgrow",
+      "inputs": {
+          "runCommand": [
+              "#!/bin/bash",
+              "set -e",
+              "# idempotent scripts and handles xfs fs type only",
+              "block_device=$(findmnt -n -o SOURCE --target {{ mountpoint }})",
+              "# remove the parition suffix, the last occourance of \"p\" onward",
+              "base_device=$(echo $block_device | sed 's|\\(.*\\)p.*|\\1|')",
+              "# get partition id, number after the last occourance of \"p\" onward",
+              "partition_id=$(echo $block_device | sed 's|.*p||')",
+              "sleep 10",
+              "growpart $base_device $partition_id",
+              "xfs_growfs -d {{ mountpoint }}",
+              "echo 'success'"
+              ]
+          }
+      }
+  ]
+}

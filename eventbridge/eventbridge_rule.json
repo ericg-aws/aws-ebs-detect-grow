@@ -1,0 +1,16 @@
+{
+    "source": [
+      "aws.cloudwatch"
+    ],
+    "detail-type": [
+      "CloudWatch Alarm State Change"
+    ],
+    "detail": {
+      "alarmName": "ec2_diskspace_root",
+      "state": {
+        "value": [
+          "ALARM"
+        ]
+      }
+    }
+  }

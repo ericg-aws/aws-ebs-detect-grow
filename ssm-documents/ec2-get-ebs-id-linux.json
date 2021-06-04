@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "2.2",
+  "description": "Retrieves Ec2 EBS volume ID for linux",
+  "parameters": {
+    "mountpoint": {
+      "type": "String",
+      "description": "Mount point for file system",
+      "default": "/none"
+    }
+  },
+  "mainSteps": [
+      {
+      "action": "aws:runShellScript",
+      "name": "getebsid",
+      "inputs": {
+          "runCommand": [
+              "#!/bin/bash",
+              "set -e",
+              "block_device=$(findmnt -n -o SOURCE --target {{ mountpoint }})",
+              "ebsnvme-id $block_device"
+              ]
+          }
+      }
+  ]
+}
+

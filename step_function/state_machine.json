@@ -1,0 +1,51 @@
+{
+    "Comment": "Get EBS ID, snapshot/grow EBS volume, and expand file system",
+    "StartAt": "error-handler",
+    "States": {
+        "error-handler": {
+            "Type": "Parallel",
+            "Branches": [
+                {
+                    "StartAt": "get-ebs-id",
+                    "States": {
+                        "get-ebs-id": {
+                            "Type": "Task",
+                            "Resource": "arn:aws:lambda:us-east-1:403680469964:function:auto01-get-ebs-id",
+                            "Next": "grow-ebs"
+                        },
+                        "grow-ebs": {
+                            "Type": "Task",
+                            "Resource": "arn:aws:lambda:us-east-1:403680469964:function:auto01-grow-ebs",
+                            "Next": "grow-fs"
+                        },
+                        "grow-fs": {
+                            "Type": "Task",
+                            "Resource": "arn:aws:lambda:us-east-1:403680469964:function:auto01-grow-fs",
+                            "End": true
+                        }
+                    }
+                }
+            ],
+            "Catch": [
+                {
+                    "ErrorEquals": [
+                        "States.ALL"
+                    ],
+                    "ResultPath": "$.error",
+                    "Next": "send-failure-message"
+                }
+            ],
+            "Next": "workflow-succeed"
+        },
+        "workflow-succeed": {
+            "Type": "Succeed"
+        },
+        "send-failure-message": {
+            "Type": "Pass",
+            "Next": "workflow-fail"
+        },
+        "workflow-fail": {
+            "Type": "Fail"
+        }
+    }
+}
