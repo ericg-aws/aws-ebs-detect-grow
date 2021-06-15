@@ -6,7 +6,7 @@
       "CloudWatch Alarm State Change"
     ],
     "detail": {
-      "alarmName": "ec2_diskspace_root",
+      "alarmName": ["ec2_diskspace_root"],
       "state": {
         "value": [
           "ALARM"
